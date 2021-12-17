@@ -1,0 +1,40 @@
+rm(list=ls())
+Norway=read.csv("Norway.csv"); Norway=subset(Norway,Year!=2021)
+Norway$Prop_AF=(Norway$AF)/Norway$Tot_Mob
+BC=read.csv("BC.csv")
+BC$Prop_AF=(BC$Leps_AF)/BC$Leps_mot
+
+library(ggpubr); library(ggplot2)
+
+ss0.5=subset(Norway,Norway$Lice.Limit==0.5); ss0.2=subset(Norway,Norway$Lice.Limit==0.2)
+ss0.2$zeroAF=ifelse(ss0.2$AF==0,"A","B"); ss0.2$zeroTM=ifelse(ss0.2$Tot_Mob==0,"A","B")
+ss0.5$zeroAF=ifelse(ss0.5$AF==0,"A","B"); ss0.5$zeroTM=ifelse(ss0.5$Tot_Mob==0,"A","B")
+BC$zeroAF=ifelse(BC$Leps_AF==0,"A","B"); BC$zeroTM=ifelse(BC$Leps_mot==0,"A","B"); 
+nrow(ss0.2); nrow(ss0.5); nrow(BC)
+
+a=ggplot(ss0.2,aes(AF))+geom_histogram(col="gray",breaks=seq(-0.1,10,0.1))+xlab("Adult Female (AF) abundance")+ylab("Frequency")+
+  xlim(-0.1,2)+scale_y_sqrt(limits=c(0,6000),breaks=c(1,10,100,500,1000,3000,5000))+
+  theme(legend.position = "none",axis.title.x = element_blank(),axis.text.x = element_blank())+geom_vline(xintercept=c(0.2),col=c(2),lwd=1,lty=c(1))+
+  annotate("text",label="Norway",x=1.5,y=4500,size=5,color=1)+annotate("text",label="(0.2 AF limit)",x=1.5,y=3000,size=4,color=1)
+b=ggplot(ss0.2, aes(Tot_Mob))+geom_histogram(col="gray",breaks=seq(-0.2,10,0.2))+xlab("Total Mobile (TM) abundance")+ylab("Frequency")+xlim(-0.2,5)+
+  scale_y_sqrt(limits=c(0,6000),breaks=c(1,10,100,500,1000,3000,5000))+
+  theme(legend.position = "none",axis.title.x = element_blank(),axis.text.x = element_blank(),
+        axis.title.y = element_blank(),axis.text.y = element_blank())+
+  annotate("text",label="Norway",x=3.7,y=4500,size=5,color=1)+
+  annotate("text",label="(0.2 AF limit)",x=3.7,y=3000,size=4,color=1)
+c=ggplot(ss0.5, aes(AF))+geom_histogram(col="gray",breaks=seq(-0.1,10,0.1))+xlab("Adult Female (AF) abundance")+ylab("Frequency")+
+  xlim(-0.1,2)+scale_y_sqrt(limits=c(0,70000),breaks=c(1,10,100,1000,5000,10000,30000,50000))+
+  theme(legend.position = "none",axis.title.x = element_blank(),axis.text.x = element_blank())+
+  annotate("text",label="Norway",x=1.5,y=45000,size=5,color=1)+annotate("text",label="(0.5 AF limit)",x=1.5,y=30000,size=4,color=1)+geom_vline(xintercept=c(0.5),col=c(2),lwd=1,lty=c(1))
+d=ggplot(ss0.5, aes(Tot_Mob))+geom_histogram(col="gray",breaks=seq(-0.2,10,0.2))+xlab("Total Mobile (TM) abundance")+ylab("Frequency")+xlim(-0.2,5)+
+  annotate("text",label="Norway",x=3.7,y=45000,size=5,color=1)+annotate("text",label="(0.5 AF limit)",x=3.7,y=30000,size=4,color=1)+
+  scale_y_sqrt(limits=c(0,70000),breaks=c(1,10,100,1000,5000,10000,30000,50000))+
+  theme(legend.position = "none",axis.title.x = element_blank(),axis.text.x = element_blank(),
+        axis.title.y = element_blank(),axis.text.y = element_blank())
+e=ggplot(BC,aes(Leps_AF))+geom_histogram(col="gray",breaks=seq(-0.1,10,0.1))+xlab("Adult Female (AF) abundance")+ylab("Frequency")+xlim(-0.1,2)+
+  annotate("text",label="BC",x=1.5,y=1000,size=5,color=1)+annotate("text",label="(3 TM limit)",x=1.5,y=650,size=4,color=1)+
+  scale_y_sqrt(limits=c(0,1300),breaks=c(1,10,100,300,500,1000))+theme(legend.position = "none")
+f=ggplot(BC,aes(Leps_mot))+geom_histogram(col="gray",breaks=seq(-0.2,10,0.2))+xlab("Total Mobile (TM) abundance")+ylab("Frequency")+xlim(-0.2,5)+
+  annotate("text",label="BC",x=4,y=1000,size=5,color=1)+annotate("text",label="(3 TM limit)",x=4,y=650,size=4,color=1)+scale_y_sqrt(limits=c(0,1300),breaks=c(1,10,100,300,500,1000))+
+  theme(legend.position = "none",axis.title.y = element_blank(),axis.text.y = element_blank())+geom_vline(xintercept=c(3),col=c(2),lwd=1,lty=c(1))
+ggarrange(a,b,c,d,e,f,ncol=2,nrow=3,widths=c(1.2,1))
