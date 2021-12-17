@@ -1,0 +1,23 @@
+rm(list=ls())
+library(ggrepel); library(ggpubr); library(ggplot2)
+Norway=read.csv("Norway.csv"); Norway=subset(Norway,Year!=2021)
+Norway$Prop_AF=(Norway$AF)/Norway$Tot_Mob
+Norway=subset(Norway,Lice.Limit=="0.5")
+
+PA_variation=matrix(NA,13,3); for(i in 1:13){PA_variation[i,]=c(median(subset(Norway,P_Area==i)$AF),median(subset(Norway,P_Area==i)$Tot_Mob),median(subset(Norway,P_Area==i)$Prop_AF,na.rm=T))}
+Yearly_variation=matrix(NA,9,3); for(i in 1:9){Yearly_variation[i,]=c(median(subset(Norway,Year==2011+i)$AF),median(subset(Norway,Year==2011+i)$Tot_Mob),median(subset(Norway,Year==2011+i)$Prop_AF,na.rm=T))}
+DF_PA <- as.data.frame(PA_variation); DF_Year <- as.data.frame(Yearly_variation)
+group<-c(rep("Parea",13),rep("Year",9)); lne=rbind(DF_PA,DF_Year); arj=cbind(lne,group)
+Norway$zeroAF=ifelse(Norway$AF==0,"A","B"); Norway$zeroTM=ifelse(Norway$Tot_Mob==0,"A","B")
+
+a=ggplot(DF_PA,aes(x=V2,y=V3))+geom_point(size=3)+xlim(0,0.7)+ylim(0.05,0.35)+ggtitle("Production Area")+theme_minimal()+xlab("Median Abundance of Total Mobiles (TM)")+ylab("Median Proportion of AF in TM")+
+  geom_text_repel(label=1:13,box.padding=0.4,col=2,arrow = arrow(length = unit(0, "npc")))
+b=ggplot(DF_Year,aes(x=V2,y=V3))+geom_point(size=3)+ggtitle("Year")+xlim(0,0.7)+ylim(0.05,0.35)+theme_minimal()+xlab("Median Abundance of Total Mobiles (TM)")+ylab("Median Proportion of AF in TM")+
+  geom_text_repel(aes(label=2012:2020),arrow = arrow(length = unit(0, "npc")),box.padding=0.4,col=2)
+c=ggplot(subset(Norway,P_Area==4|P_Area==7|P_Area==11),aes(AF,color=zeroAF,fill=zeroAF))+#theme_minimal()+
+  ggtitle("Production Area")+ geom_histogram(color="gray",alpha=1,breaks=seq(-0.1,10,0.1))+xlab("Adult Females (AF) abundance")+ylab("Frequency")+xlim(-0.1,2)+facet_wrap(.~P_Area,ncol=3)+
+  geom_vline(xintercept=0.5,col=2,lwd=1,lty=1)+theme(legend.position = "none")+scale_y_sqrt(breaks=c(1,10,100,1000,5000,10000))+scale_fill_manual(values=c("black","gray"))
+d=ggplot(subset(Norway,Year==2012|Year==2015|Year==2020),aes(AF,color=zeroAF,fill=zeroAF))+#theme_minimal()+
+  geom_histogram(color="gray",alpha=1,breaks=seq(-0.1,10,0.1))+xlab("Adult Females (AF) abundance")+ylab("Frequency")+xlim(-0.1,2)+facet_wrap(.~Year,ncol=3)+
+  geom_vline(xintercept=0.5,col=2,lwd=1,lty=1)+theme(legend.position = "none")+scale_y_sqrt(breaks=c(1,10,100,1000,5000,10000))+ggtitle("Year")+scale_fill_manual(values=c("black","gray"))
+ggarrange(a,c,b,d,ncol=2,nrow=2,heights=c(1,1),widths = c(0.7,1))
