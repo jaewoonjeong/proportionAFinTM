@@ -4,16 +4,20 @@ Norway$Prop_AF=(Norway$AF)/Norway$Tot_Mob
 
 library(ggrepel); library(ggpubr); library(ggplot2); library(grid); library(gridExtra)
 
-PA_variation=matrix(NA,13,3); for(i in 1:13){PA_variation[i,]=c(median(subset(Norway,P_Area==i)$AF),median(subset(Norway,P_Area==i)$Tot_Mob),median(subset(Norway,P_Area==i)$Prop_AF,na.rm=T))}
-Yearly_variation=matrix(NA,9,3); for(i in 1:9){Yearly_variation[i,]=c(median(subset(Norway,Year==2011+i)$AF),median(subset(Norway,Year==2011+i)$Tot_Mob),median(subset(Norway,Year==2011+i)$Prop_AF,na.rm=T))}
+PA_variation=matrix(NA,length(na.omit(unique(Norway$P_Area))),3)
+for(i in 1:length(na.omit(unique(Norway$P_Area)))){PA_variation[i,]=c(median(subset(Norway,P_Area==i)$AF),median(subset(Norway,P_Area==i)$Tot_Mob),median(subset(Norway,P_Area==i)$Prop_AF,na.rm=T))}
+
+Yearly_variation=matrix(NA,length(unique(Norway$Year)),3)
+for(i in 1:length(unique(Norway$Year))){Yearly_variation[i,]=c(median(subset(Norway,Year==2011+i)$AF),median(subset(Norway,Year==2011+i)$Tot_Mob),median(subset(Norway,Year==2011+i)$Prop_AF,na.rm=T))}
+
 DF_PA <- as.data.frame(PA_variation); DF_Year <- as.data.frame(Yearly_variation)
-group<-c(rep("Parea",13),rep("Year",9)); lne=rbind(DF_PA,DF_Year); arj=cbind(lne,group)
+group<-c(rep("Parea",length(na.omit(unique(Norway$P_Area)))),rep("Year",length(unique(Norway$Year)))); lne=rbind(DF_PA,DF_Year); arj=cbind(lne,group)
 Norway$zeroAF=ifelse(Norway$AF==0,"A","B"); Norway$zeroTM=ifelse(Norway$Tot_Mob==0,"A","B")
 
 a=ggplot(DF_PA,aes(x=V2,y=V3))+geom_point(size=3)+xlim(0,0.7)+ylim(0.05,0.35)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
   theme(plot.margin = unit(c(0.5,1.5,2.5,0.5),"lines"))+geom_text_repel(label=1:13,box.padding=0.4,col=2,arrow = arrow(length = unit(0, "npc")))
 b=ggplot(DF_Year,aes(x=V2,y=V3))+geom_point(size=3)+xlim(0,0.7)+ylim(0.05,0.35)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
-  theme(plot.margin = unit(c(0.5,1.5,0.5,0.5),"lines"))+geom_text_repel(aes(label=2012:2020),arrow = arrow(length = unit(0, "npc")),box.padding=0.4,col=2)
+  theme(plot.margin = unit(c(0.5,1.5,0.5,0.5),"lines"))+geom_text_repel(aes(label=2012:2021),arrow = arrow(length = unit(0, "npc")),box.padding=0.4,col=2)
 c=ggplot(subset(Norway,P_Area==4|P_Area==7|P_Area==11),aes(AF,color=zeroAF,fill=zeroAF))+theme_minimal()+
   geom_histogram(color="gray40",alpha=1,breaks=seq(-0.1,10,0.1))+xlab("Adult Females (AF) mean abundance")+ylab("Frequency")+xlim(-0.1,2)+facet_wrap(.~P_Area,ncol=3)+
   geom_segment(aes(x = 0.5 , y = 0, xend = 0.5, yend = 11000),col=c(2),lwd=1,lty=c(1))+
