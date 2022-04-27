@@ -2,9 +2,6 @@ Norway=read.csv("/Norway_new.csv");
 Norway$Tot_Mob=Norway$AF+Norway$Motile
 Norway$Prop_AF=(Norway$AF)/Norway$Tot_Mob
 
-BC=read.csv("/BC_new.csv")
-BC$Prop_AF=(BC$Leps_AF)/BC$Leps_mot; BC=BC[-which(BC$Leps_mot<BC$Leps_AF),]
-
 library(ggrepel); library(ggpubr); library(ggplot2); library(grid); library(gridExtra)
 
 PA_variation=matrix(NA,13,3); for(i in 1:13){PA_variation[i,]=c(median(subset(Norway,P_Area==i)$AF),median(subset(Norway,P_Area==i)$Tot_Mob),median(subset(Norway,P_Area==i)$Prop_AF,na.rm=T))}
