@@ -1,0 +1,23 @@
+rm(list=ls())
+
+Norway=read.csv("Norway_new.csv");
+Norway$Tot_Mob=Norway$AF+Norway$Motile
+Norway$Prop_AF=(Norway$AF)/Norway$Tot_Mob
+head(Norway); dim(Norway)
+
+BC=read.csv("C:/Users/jeongj/OneDrive - DFO-MPO/Research Projects/AF proportions/Data/BC_new.csv")
+BC$Prop_AF=(BC$Leps_AF)/BC$Leps_mot; BC=BC[-which(BC$Leps_mot<BC$Leps_AF),]
+head(BC); dim(BC)
+
+set.seed(1)
+Norway=Norway[sample(1:dim(Norway)[1],dim(BC)[1]),];
+
+library(ggplot2); library(gridExtra)
+a=ggplot(data=subset(Norway,Lice.Limit==0.2),aes(x=AF,y=Prop_AF))+geom_point(size=0.02)+xlim(0,4)+xlab("Adult Female (AF) abundance")+ylab("AF/TM proportion")+ggtitle("Norway (0.2 AF limit)")+theme_minimal()+geom_segment(aes(x = 0.2 , y = 0, xend = 0.2, yend = 1),col=c(2),lwd=1,lty=c(1))
+b=ggplot(data=subset(Norway,Lice.Limit==0.5),aes(x=AF,y=Prop_AF))+geom_point(size=0.1)+xlim(0,4)+xlab("Adult Female (AF) abundance")+ylab("AF/TM proportion")+ggtitle("Norway (0.5 AF limit)")+theme_minimal()+geom_segment(aes(x = 0.5 , y = 0, xend = 0.5, yend = 1),col=c(2),lwd=1,lty=c(1))
+c=ggplot(data=BC,aes(x=Leps_AF,y=Prop_AF))+geom_point(size=0.1)+xlim(0,4)+xlab("Adult Female (AF) abundance")+ylab("AF/TM proportion")+ggtitle("BC (3.0 TM limit)")+theme_minimal()
+aa=ggplot(data=subset(Norway,Lice.Limit==0.2),aes(x=Tot_Mob,y=Prop_AF))+geom_point(size=0.1)+xlim(0,8)+xlab("Total Mobile (TM) abundance")+ylab("AF/TM proportion")+ggtitle("Norway (0.2 AF limit)")+theme_minimal()
+bb=ggplot(data=subset(Norway,Lice.Limit==0.5),aes(x=Tot_Mob,y=Prop_AF))+geom_point(size=0.1)+xlim(0,8)+xlab("Total Mobile (TM) abundance")+ylab("AF/TM proportion")+ggtitle("Norway (0.5 AF limit)")+theme_minimal()
+cc=ggplot(data=BC,aes(x=Leps_mot,y=Prop_AF))+geom_point(size=0.1)+xlim(0,8)+xlab("Total Mobile (TM) abundance")+ylab("AF/TM proportion")+ggtitle("BC (3.0 TM limit)")+theme_minimal()+geom_segment(aes(x = 3 , y = 0, xend = 3, yend = 1),col=c(2),lwd=1,lty=c(1))
+
+grid.arrange(a,aa,b,bb,c,cc,ncol=2,nrow=3)
