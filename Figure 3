@@ -15,9 +15,9 @@ DF_PA <- as.data.frame(PA_variation); DF_Year <- as.data.frame(Yearly_variation)
 Norway$zeroAF=ifelse(Norway$AF==0,"A","B"); Norway$zeroTM=ifelse(Norway$Tot_Mob==0,"A","B")
 Norway$PA=paste("PA_",Norway$P_Area,sep="")
 
-a=ggplot(DF_PA,aes(x=V1,y=V3))+geom_point(size=3)+xlim(0,0.7)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
+a=ggplot(DF_PA,aes(x=V1,y=V3))+geom_point(size=3)+xlim(0,0.7)+ylim(0,0.35)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
   theme(plot.margin = unit(c(0.5,1.5,2.5,0.5),"lines"))+geom_text_repel(label=1:13,box.padding=0.4,col=2,arrow = arrow(length = unit(0, "npc")))
-b=ggplot(DF_Year,aes(x=V1,y=V3))+geom_point(size=3)+xlim(0,0.7)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
+b=ggplot(DF_Year,aes(x=V1,y=V3))+geom_point(size=3)+xlim(0,0.7)+ylim(0,0.35)+theme_minimal()+xlab("Total Mobiles (TM) median abundance")+ylab("Median Proportion of AF in TM")+
   theme(plot.margin = unit(c(0.5,1.5,0.5,0.5),"lines"))+geom_text_repel(aes(label=2012:2021),arrow = arrow(length = unit(0, "npc")),box.padding=0.4,col=2)
 Norway$PA=factor(Norway$PA, c("PA_1","PA_2","PA_3","PA_4","PA_5","PA_6","PA_7","PA_8","PA_9","PA_10","PA_11")) 
 c=ggplot(subset(Norway,P_Area==4|P_Area==7|P_Area==11),aes(x=AF))+geom_density(fill='gray',adjust=0.7)+xlim(0,2)+facet_wrap(.~PA,ncol=3)+theme_minimal()+
